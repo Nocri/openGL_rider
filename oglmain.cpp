@@ -113,5 +113,7 @@ void Timer(int _v)
 	if(_v == 1)
 	{
 		scene_.Timer();
+		glutTimerFunc(scene_.GetTimer(), Timer, 1);
+
 	}
 }
