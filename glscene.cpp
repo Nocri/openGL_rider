@@ -12,6 +12,8 @@
 GLint glScene::winx_ = 0;
 GLint glScene::winy_ = 0;
 
+
+
 long time = 0;
 
 
@@ -36,6 +38,98 @@ public:
 	long getLifetime() { return this->lifeTime; }
 	
 };
+
+class Car {
+	GLfloat x, y, aX = 0.0f, aY;
+	const GLfloat ACCELERATION_VALUE = 0.001;
+
+	GLfloat angle = 0.0f;
+	const GLfloat CAR_X = 0.2;
+	const GLfloat CAR_Y = 0.3;
+	GLfloat vX, vY;
+
+	
+
+public:
+	Car(GLfloat x, GLfloat y) {
+		this->x = x;
+		this->y = y;
+	};
+	~Car() {};
+
+	void render() {
+
+		glColor3f(0.0f, 0.0f, 0.0f);
+
+		vX = sin(angle * 3.14 / 180.0) * aY;
+		vY = cos(angle * 3.14 / 180.0) * aY;
+		std::cout << "y = " << y << std::endl;
+		std::cout << "x = " << x << std::endl;
+		std::cout << "vX = " << vX << std::endl;
+		std::cout << "vY = " << vY << std::endl;
+		std::cout << "angle = " << angle << std::endl;
+		std::cout << "\n\n";
+
+		x += vX;
+		y += vY;
+
+		glPushMatrix();
+		//std::cout << "\nangle : " << angle;
+
+		//if (aY < 10e-6 && aY > -10e-6 ) {
+		//	aX > 0 ? angle = 90 : angle = 270;
+		//}
+		//else {
+		//	angle = (atan(aX / aY)) * 225;
+		//}
+
+		glTranslatef(x, y, 0.0f);
+
+		glTranslatef(CAR_X / 2, CAR_Y / 2, 0.0f);
+		glRotatef(-angle, 0.0f, 0.0f, 1.0f);
+		glTranslatef(-CAR_X / 2, -CAR_Y / 2, 0.0f);
+
+
+
+		glRectf(0.0f, 0.0f, CAR_X, CAR_Y);
+		glPopMatrix();
+
+	};
+
+	void addAcceleration(int direction) {
+		switch (direction) {
+		case GLUT_KEY_DOWN:
+			aY -= ACCELERATION_VALUE;
+			break;
+
+		case GLUT_KEY_UP:
+			aY += ACCELERATION_VALUE;
+
+			break;
+
+		case GLUT_KEY_RIGHT:
+			aX += ACCELERATION_VALUE;
+			angle -= 3.0f;
+			break;
+
+		case GLUT_KEY_LEFT:
+			aX -= ACCELERATION_VALUE;
+			angle += 3.0f;
+			break;
+		}
+
+		if(angle > 360 || angle < -360) angle = 0 ;
+		std::cout << std::endl << angle ;
+		if (aX > 360.0 || aX < -360.0)
+			aX = 0.0;
+	}
+
+
+
+};
+
+Car car(0.0f, 0.0f);
+
 
 Smoke *smoke;
 std::vector<Smoke> smokes;
@@ -75,7 +169,7 @@ void glScene::Resize(int _w, int _h)
 	glLoadIdentity();
 
 	//ustaw uklad wspolrzednych
-	glOrtho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f);
+	glOrtho(-5.0f, 5.0f, -5.0f, 5.0f, -5.0f, 5.0f);
 
 	//macierze modelowania
 	glMatrixMode(GL_MODELVIEW);
@@ -118,21 +212,21 @@ void glScene::RenderScene()
 
 	glRectf(-0.5f, -0.5f, 0.5f, 0.5f);
 
+	car.render();
 
-	std::cout << smokes.size() << std::endl;
 	for(int i = 0; i < smokes.size(); i++)
 	{
 		glColor4f(0.0f, 1.0f, 0.0f, smokes[i].lifeTime * 0.05f);
 
 		glRectf(smokes[i].getX(), smokes[i].getY(), smokes[i].getX() + smokeSize, smokes[i].getY() + smokeSize);
 		smokes[i].live();
-		std::cout << smokes[i].getX() << " " << smokes[i].getY() << " " << smokes[i].getLifetime() << "\n";
+		//std::cout << smokes[i].getX() << " " << smokes[i].getY() << " " << smokes[i].getLifetime() << "\n";
 	}
 
-	std::cout << "\n\n";
+	//std::cout << "\n\n";
 	if (smokes.size() > 0 && smokes[0].getLifetime() < 0) {
 		smokes.erase(smokes.begin(), smokes.begin()+1);
-		std::cout << "erase";
+		//std::cout << "erase";
 	}
 
 	glPopMatrix();
@@ -154,18 +248,19 @@ void glScene::KeyboardFunction(char _key, int, int)
 
 void glScene::KeyboardFunction(int _key, int, int)
 {
-	if(_key == GLUT_KEY_RIGHT)
-		rot_[1] +=0.5;
-	else if(_key == GLUT_KEY_LEFT)
-		rot_[1] -= 0.5;
-	else if(_key == GLUT_KEY_UP)
-		rot_[0] += 0.5;
-	else if(_key == GLUT_KEY_DOWN)
-		rot_[0] -= 0.5;
-	else if(_key == GLUT_KEY_PAGE_UP)
-		rot_[2] += 0.5;
-	else if(_key == GLUT_KEY_PAGE_DOWN)
-		rot_[2] -= 0.5;
+	//if(_key == GLUT_KEY_RIGHT)
+	//	rot_[1] +=0.5;
+	//else if(_key == GLUT_KEY_LEFT)
+	//	rot_[1] -= 0.5;
+	//else if(_key == GLUT_KEY_UP)
+	//	rot_[0] += 0.5;
+	//else if(_key == GLUT_KEY_DOWN)
+	//	rot_[0] -= 0.5;
+	//else if(_key == GLUT_KEY_PAGE_UP)
+	//	rot_[2] += 0.5;
+	//else if(_key == GLUT_KEY_PAGE_DOWN)
+	//	rot_[2] -= 0.5;
+	car.addAcceleration(_key);
 
 	if(rot_[0] > 360) rot_[0] = 360 - rot_[0];
 	if(rot_[1] > 360) rot_[1] = 360 - rot_[1];
